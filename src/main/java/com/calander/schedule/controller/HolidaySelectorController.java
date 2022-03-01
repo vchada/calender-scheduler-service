@@ -46,7 +46,7 @@ public class HolidaySelectorController {
     }
 
     @GetMapping(value = "/get-all-holidays/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, LocalDate> getAllHoliday(@PathVariable final int year) {
+    public Map<String, String> getAllHoliday(@PathVariable final int year) {
         return holidaySelectorService.fetchAllHolidays(year);
     }
 

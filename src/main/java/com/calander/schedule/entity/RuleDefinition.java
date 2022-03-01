@@ -4,14 +4,7 @@ import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.Month;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +44,7 @@ public class RuleDefinition {
 	private int weekOfTheMonth;
 
 	@Column(name = "CUSTOM_DAYS")
+	@Lob
 	private String customDays;
 
 	@Column(name = "CREATED_DT_TM")

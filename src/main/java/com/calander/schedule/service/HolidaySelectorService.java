@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
@@ -37,9 +38,9 @@ public class HolidaySelectorService {
 					.customDays(holidayPersistRequest.getCustomDays())
 					.holidayType(holidayPersistRequest.getHolidayType())
 					.dayOfTheMonth(holidayPersistRequest.getDayOfTheMonth())
-					.dayOfTheWeek(holidayPersistRequest.getDayOfTheWeek())
-					.isActive(holidayPersistRequest.isActive() ? 1 : 0)
-					.month(holidayPersistRequest.getMonth())
+					.dayOfTheWeek(holidayPersistRequest.getDayOfTheWeek() <= 0 ? null : DayOfWeek.of(holidayPersistRequest.getDayOfTheWeek()))
+					.isActive("true".equals(holidayPersistRequest.getIsActive()) ? 1 : 0)
+					.month(holidayPersistRequest.getMonth() <= 0 ? null : Month.of(holidayPersistRequest.getMonth()))
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
 					.build();
 			ruleDefinitionRepo.save(ruleDefinition);
@@ -49,26 +50,37 @@ public class HolidaySelectorService {
 	}
 
 
-	public Map<String, LocalDate> fetchAllHolidays(final int year) {
-		Map<String, LocalDate> holidayDateMap = new HashMap<>();
+	public Map<String, String> fetchAllHolidays(final int year) {
+		Map<String, String> holidayDateMap = new HashMap<>();
 		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(1);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
 			ruleDefinitionList.stream()
+					.filter(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())
 					.forEach(ruleDefinition ->
-							holidayDateMap.put(ruleDefinition.getHolidayType(), dateOf(ruleDefinition, year)));
+							holidayDateMap.put(ruleDefinition.getHolidayType(), dateOf(ruleDefinition, year).toString()));
+			ruleDefinitionList.stream()
+					.filter(ruleDefinition -> Objects.nonNull(ruleDefinition.getCustomDays()) && !ruleDefinition.getCustomDays().isEmpty())
+					.forEach(ruleDefinition -> {
+						List<String> updatedDates = new ArrayList<>();
+						for(String customDate : ruleDefinition.getCustomDays().split(",")) {
+							final String[] customDateValues = customDate.split("-");
+							LocalDate date = LocalDate.of(year,
+									Month.of(Integer.parseInt(customDateValues[0])), Integer.parseInt(customDateValues[1]));
+							updatedDates.add(date.toString());
+						}
+						holidayDateMap.put(ruleDefinition.getHolidayType(), String.join(",", updatedDates));
+					});
 		}
 		return holidayDateMap;
 	}
 	
-	private LocalDate dateOf(final RuleDefinition dateObservance, final int year) {
-		LocalDate localDate = null;
-		if(dateObservance.getDayOfTheMonth() != 0) {
-			localDate = LocalDate.of(year, dateObservance.getMonth(), dateObservance.getDayOfTheMonth());
+	private LocalDate dateOf(final RuleDefinition ruleDefinition, final int year) {
+		if(ruleDefinition.getDayOfTheMonth() != 0) {
+			return adjustForWeekendsIfNecessary(LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth()));
 		} else {
-			localDate = LocalDate.now().withYear(year).withMonth(dateObservance.getMonth().getValue())
-			.with(TemporalAdjusters.dayOfWeekInMonth(dateObservance.getWeekOfTheMonth(), dateObservance.getDayOfTheWeek()));
+			return adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+			.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth(), ruleDefinition.getDayOfTheWeek())));
 		}
-		return adjustForWeekendsIfNecessary(localDate);
 	}
 
 	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
