@@ -1,12 +1,17 @@
 package com.calander.schedule.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
+import com.calander.schedule.beans.CalenderScheduleRequest;
+import com.calander.schedule.beans.HolidayPersistRequest;
+import com.calander.schedule.beans.StatusResponse;
+import com.calander.schedule.entity.CalendarSchedule;
+import com.calander.schedule.service.CalenderScheduleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.calander.schedule.beans.HolidayDateRequest;
 import com.calander.schedule.service.HolidaySelectorService;
@@ -14,20 +19,47 @@ import com.calander.schedule.service.HolidaySelectorService;
 @RestController
 @RequestMapping(value = "/holiday")
 public class HolidaySelectorController {
-	
-	
-	private final HolidaySelectorService holidaySelectorService;
-	
-	
-	public HolidaySelectorController(final HolidaySelectorService holidaySelectorService) {
-		this.holidaySelectorService = holidaySelectorService;
-	}
-	
 
-	@PostMapping(value = "/find-holiday",
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public LocalDate findHolidayDate(@RequestBody final HolidayDateRequest holidayDateRequest) {
-		return holidaySelectorService.getHolidayDate(holidayDateRequest);
-	}
+
+    private final HolidaySelectorService holidaySelectorService;
+
+    @Autowired
+    CalenderScheduleService calenderScheduleService;
+
+
+    public HolidaySelectorController(final HolidaySelectorService holidaySelectorService) {
+        this.holidaySelectorService = holidaySelectorService;
+    }
+
+
+    @PostMapping(value = "/find-holiday",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public LocalDate findHolidayDate(@RequestBody final HolidayDateRequest holidayDateRequest) {
+        return holidaySelectorService.getHolidayDate(holidayDateRequest);
+    }
+
+    @PostMapping(value = "/save",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public StatusResponse persistHoliday(@RequestBody final HolidayPersistRequest holidayPersistRequest) {
+        return holidaySelectorService.persistHoliday(holidayPersistRequest);
+    }
+
+    @GetMapping(value = "/get-all-holidays/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, LocalDate> getAllHoliday(@PathVariable final int year) {
+        return holidaySelectorService.fetchAllHolidays(year);
+    }
+
+    @PostMapping(value = "/saveCalendar",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public StatusResponse persistCalendar(@RequestBody final CalenderScheduleRequest calenderScheduleRequest) {
+        return calenderScheduleService.persistCalenderSchedule(calenderScheduleRequest);
+    }
+
+    @GetMapping(value = "/get-all-calendars/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CalendarSchedule> getAllCalendars(@PathVariable final String year) {
+        return calenderScheduleService.getAllCalendars(year);
+    }
 
 }

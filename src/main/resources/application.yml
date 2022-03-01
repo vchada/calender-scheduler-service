@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dbo
+    username: root
+    password: Vedha@4321
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+

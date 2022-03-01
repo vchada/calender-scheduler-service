@@ -1,35 +1,66 @@
 package com.calander.schedule.service;
 
+import com.calander.schedule.beans.HolidayDateRequest;
+import com.calander.schedule.beans.HolidayPersistRequest;
+import com.calander.schedule.beans.StatusResponse;
+import com.calander.schedule.entity.RuleDefinition;
+import com.calander.schedule.repo.RuleDefinitionRepo;
+import org.springframework.stereotype.Service;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import com.calander.schedule.beans.HolidayDateRequest;
-import com.calander.schedule.entity.DateObservance;
-import com.calander.schedule.repo.DateObservanceRepo;
+import java.util.*;
 
 @Service
 public class HolidaySelectorService {
 
-	private DateObservanceRepo dateObservanceRepo;
+	private RuleDefinitionRepo ruleDefinitionRepo;
 
-	public HolidaySelectorService(final DateObservanceRepo dateObservanceRepo) {
-		this.dateObservanceRepo = dateObservanceRepo;
+	public HolidaySelectorService(final RuleDefinitionRepo dateObservanceRepo) {
+		this.ruleDefinitionRepo = dateObservanceRepo;
 	}
 
 	public LocalDate getHolidayDate(final HolidayDateRequest holidayDateRequest) {
-		Optional<DateObservance> dateObservance = Optional
-				.ofNullable(dateObservanceRepo.findByHolidayType(holidayDateRequest.getHolidayType()));
+		Optional<RuleDefinition> dateObservance = Optional
+				.ofNullable(ruleDefinitionRepo.findByHolidayType(holidayDateRequest.getHolidayType()));
 		if (dateObservance.isPresent()) {
 			return dateOf(dateObservance.get(), holidayDateRequest.getYear());
 		}
 		return null;
 	}
+
+	public StatusResponse persistHoliday(final HolidayPersistRequest holidayPersistRequest) {
+		if(Objects.nonNull(holidayPersistRequest)) {
+			final RuleDefinition ruleDefinition = RuleDefinition.builder()
+					.createdUser(holidayPersistRequest.getCreatedUser())
+					.customDays(holidayPersistRequest.getCustomDays())
+					.holidayType(holidayPersistRequest.getHolidayType())
+					.dayOfTheMonth(holidayPersistRequest.getDayOfTheMonth())
+					.dayOfTheWeek(holidayPersistRequest.getDayOfTheWeek())
+					.isActive(holidayPersistRequest.isActive() ? 1 : 0)
+					.month(holidayPersistRequest.getMonth())
+					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
+					.build();
+			ruleDefinitionRepo.save(ruleDefinition);
+			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
+		}
+		return StatusResponse.builder().message("HOLIDAY_PERSIST_FAILED").build();
+	}
+
+
+	public Map<String, LocalDate> fetchAllHolidays(final int year) {
+		Map<String, LocalDate> holidayDateMap = new HashMap<>();
+		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(1);
+		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
+			ruleDefinitionList.stream()
+					.forEach(ruleDefinition ->
+							holidayDateMap.put(ruleDefinition.getHolidayType(), dateOf(ruleDefinition, year)));
+		}
+		return holidayDateMap;
+	}
 	
-	private LocalDate dateOf(DateObservance dateObservance, int year) {
+	private LocalDate dateOf(final RuleDefinition dateObservance, final int year) {
 		LocalDate localDate = null;
 		if(dateObservance.getDayOfTheMonth() != 0) {
 			localDate = LocalDate.of(year, dateObservance.getMonth(), dateObservance.getDayOfTheMonth());
@@ -40,9 +71,8 @@ public class HolidaySelectorService {
 		return adjustForWeekendsIfNecessary(localDate);
 	}
 
-	private LocalDate adjustForWeekendsIfNecessary(LocalDate localDate) {
-		DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-		System.out.println(dayOfWeek);
+	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
+		final DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 		if(dayOfWeek != null && DayOfWeek.SATURDAY.equals(dayOfWeek)) {
 			return localDate.minusDays(1);
 		} else if(DayOfWeek.SUNDAY.equals(dayOfWeek)) {
@@ -63,5 +93,8 @@ public class HolidaySelectorService {
 //		System.out.println(new HolidaySelectorService().dateOf(dateObservance, 2026));
 //		
 //	}
+
+
+
 
 }
