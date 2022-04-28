@@ -5,8 +5,12 @@ import com.calander.schedule.beans.HolidayPersistRequest;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.repo.RuleDefinitionRepo;
+import org.apache.tomcat.util.digester.Rule;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -49,6 +53,10 @@ public class HolidaySelectorService {
 		return StatusResponse.builder().message("HOLIDAY_PERSIST_FAILED").build();
 	}
 
+	public List<RuleDefinition> fetchAllRules()
+	{
+		return (List<RuleDefinition>) ruleDefinitionRepo.findAll();
+	}
 
 	public Map<String, String> fetchAllHolidays(final int year) {
 		Map<String, String> holidayDateMap = new HashMap<>();
@@ -93,7 +101,43 @@ public class HolidaySelectorService {
 			return localDate;
 		}
 	}
-	
+
+	public RuleDefinition fetchAllRulesById(int id)
+	{
+		return ruleDefinitionRepo.findById(id).get();
+	}
+
+	public StatusResponse updateRules(RuleDefinition ruleDefinition)
+	{
+		Optional<RuleDefinition> searchRuleEntity = ruleDefinitionRepo.findById(ruleDefinition.getId());
+		if(searchRuleEntity.isPresent()) {
+			RuleDefinition ruleDefinition1 = searchRuleEntity.get();
+
+			ruleDefinition1.setCreatedUser(ruleDefinition.getCreatedUser());
+			ruleDefinition1.setCustomDays(ruleDefinition.getCustomDays());
+			ruleDefinition1.setHolidayType(ruleDefinition.getHolidayType());
+			ruleDefinition1.setDayOfTheMonth(ruleDefinition.getDayOfTheMonth());
+			ruleDefinition1.setDayOfTheWeek(!StringUtils.isEmpty(ruleDefinition.getDayOfTheWeek())?  ruleDefinition.getDayOfTheWeek():null);
+			ruleDefinition1.setIsActive("true".equals(ruleDefinition.getIsActive()) ? 1 : 0);
+			ruleDefinition1.setMonth(!StringUtils.isEmpty(ruleDefinition.getMonth()) ? ruleDefinition.getMonth():null);
+			ruleDefinition1.setWeekOfTheMonth(ruleDefinition.getWeekOfTheMonth());
+
+			DateFormat df = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
+			java.sql.Date today = (java.sql.Date) new Date();
+			ruleDefinition1.setLastModifiedDateAndTime(today);
+
+			ruleDefinitionRepo.save(ruleDefinition1);
+			return StatusResponse.builder().message("HOLIDAY_UPDATED_SUCCESSFULLY").build();
+		}
+		return StatusResponse.builder().message("HOLIDAY_UPDATE_FAILED").build();
+	}
+
+	/*public RuleDefinition fetchRuleDefinition(RuleDefinition ruleDefinition,int year)
+	{
+		dateOf(ruleDefinition,year);
+
+	}*/
+
 //	public static void main(String[] args) {
 //		DateObservance dateObservance = DateObservance.builder()
 //				.holidayType("INDEPENDENCE_DAY")

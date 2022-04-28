@@ -8,6 +8,7 @@ import com.calander.schedule.beans.CalenderScheduleRequest;
 import com.calander.schedule.beans.HolidayPersistRequest;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.CalendarSchedule;
+import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.service.CalenderScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -62,4 +63,21 @@ public class HolidaySelectorController {
         return calenderScheduleService.getAllCalendars(year);
     }
 
+    @GetMapping(value = "/get-all-rules", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RuleDefinition> getAllRules()
+    {
+        return holidaySelectorService.fetchAllRules();
+    }
+
+    @GetMapping(value = "/get-rule-details-by-ruleId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RuleDefinition getAllRulesByRuleId(@RequestParam (value = "ruleId",required = false) String ruleId)
+    {
+        return holidaySelectorService.fetchAllRulesById(Integer.valueOf(ruleId));
+    }
+    @PostMapping(value = "/update-rule",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public StatusResponse persistHoliday(@RequestBody final RuleDefinition ruleDefinition) {
+        return holidaySelectorService.updateRules(ruleDefinition);
+    }
 }

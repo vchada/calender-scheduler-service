@@ -8,7 +8,7 @@ import com.calander.schedule.entity.RuleDefinition;
 import java.util.List;
 
 @Repository
-public interface RuleDefinitionRepo extends CrudRepository<RuleDefinition, Long>{
+public interface RuleDefinitionRepo extends CrudRepository<RuleDefinition, Integer>{
 	
 	RuleDefinition findByHolidayType(String holidayType);
 

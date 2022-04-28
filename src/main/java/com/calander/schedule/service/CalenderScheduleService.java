@@ -26,6 +26,7 @@ public class CalenderScheduleService {
                     .createdUser(calenderScheduleRequest.getCreatedUser())
                     .name(calenderScheduleRequest.getName())
                     .RuleIds(calenderScheduleRequest.getRuleIds())
+                    .isActive(true)
                     .lastModifiedUser(calenderScheduleRequest.getLastModifiedUser())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);
