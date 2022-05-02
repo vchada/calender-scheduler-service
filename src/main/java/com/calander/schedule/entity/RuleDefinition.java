@@ -62,6 +62,6 @@ public class RuleDefinition {
 	private String lastModifiedUser;
 
 	@Column(name = "IS_ACTIVE")
-	private int isActive;
+	private boolean isActive;
 
 }

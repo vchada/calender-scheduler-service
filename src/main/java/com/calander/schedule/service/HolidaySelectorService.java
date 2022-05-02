@@ -43,7 +43,7 @@ public class HolidaySelectorService {
 					.holidayType(holidayPersistRequest.getHolidayType())
 					.dayOfTheMonth(holidayPersistRequest.getDayOfTheMonth())
 					.dayOfTheWeek(holidayPersistRequest.getDayOfTheWeek() <= 0 ? null : DayOfWeek.of(holidayPersistRequest.getDayOfTheWeek()))
-					.isActive("true".equals(holidayPersistRequest.getIsActive()) ? 1 : 0)
+					.isActive("true".equals(holidayPersistRequest.getIsActive()) ? true : false)
 					.month(holidayPersistRequest.getMonth() <= 0 ? null : Month.of(holidayPersistRequest.getMonth()))
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
 					.build();
@@ -60,7 +60,7 @@ public class HolidaySelectorService {
 
 	public Map<String, String> fetchAllHolidays(final int year) {
 		Map<String, String> holidayDateMap = new HashMap<>();
-		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(1);
+		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(true);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
 			ruleDefinitionList.stream()
 					.filter(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())
@@ -111,23 +111,24 @@ public class HolidaySelectorService {
 	{
 		Optional<RuleDefinition> searchRuleEntity = ruleDefinitionRepo.findById(ruleDefinition.getId());
 		if(searchRuleEntity.isPresent()) {
-			RuleDefinition ruleDefinition1 = searchRuleEntity.get();
-
-			ruleDefinition1.setCreatedUser(ruleDefinition.getCreatedUser());
-			ruleDefinition1.setCustomDays(ruleDefinition.getCustomDays());
-			ruleDefinition1.setHolidayType(ruleDefinition.getHolidayType());
-			ruleDefinition1.setDayOfTheMonth(ruleDefinition.getDayOfTheMonth());
-			ruleDefinition1.setDayOfTheWeek(!StringUtils.isEmpty(ruleDefinition.getDayOfTheWeek())?  ruleDefinition.getDayOfTheWeek():null);
-			ruleDefinition1.setIsActive("true".equals(ruleDefinition.getIsActive()) ? 1 : 0);
-			ruleDefinition1.setMonth(!StringUtils.isEmpty(ruleDefinition.getMonth()) ? ruleDefinition.getMonth():null);
-			ruleDefinition1.setWeekOfTheMonth(ruleDefinition.getWeekOfTheMonth());
-
-			DateFormat df = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
-			java.sql.Date today = (java.sql.Date) new Date();
-			ruleDefinition1.setLastModifiedDateAndTime(today);
-
-			ruleDefinitionRepo.save(ruleDefinition1);
+			ruleDefinitionRepo.save(ruleDefinition);
 			return StatusResponse.builder().message("HOLIDAY_UPDATED_SUCCESSFULLY").build();
+//			RuleDefinition ruleDefinition1 = searchRuleEntity.get();
+//
+//			ruleDefinition1.setCreatedUser(ruleDefinition.getCreatedUser());
+//			ruleDefinition1.setCustomDays(ruleDefinition.getCustomDays());
+//			ruleDefinition1.setHolidayType(ruleDefinition.getHolidayType());
+//			ruleDefinition1.setDayOfTheMonth(ruleDefinition.getDayOfTheMonth());
+//			ruleDefinition1.setDayOfTheWeek(!StringUtils.isEmpty(ruleDefinition.getDayOfTheWeek())?  ruleDefinition.getDayOfTheWeek():null);
+//			ruleDefinition1.setIsActive("true".equals(ruleDefinition.getIsActive()) ? 1 : 0);
+//			ruleDefinition1.setMonth(!StringUtils.isEmpty(ruleDefinition.getMonth()) ? ruleDefinition.getMonth():null);
+//			ruleDefinition1.setWeekOfTheMonth(ruleDefinition.getWeekOfTheMonth());
+//
+//			DateFormat df = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
+//			java.sql.Date today = (java.sql.Date) new Date();
+//			ruleDefinition1.setLastModifiedDateAndTime(today);
+//
+//			ruleDefinitionRepo.save(ruleDefinition1)
 		}
 		return StatusResponse.builder().message("HOLIDAY_UPDATE_FAILED").build();
 	}
