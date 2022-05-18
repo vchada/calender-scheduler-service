@@ -8,5 +8,5 @@ public class CalenderScheduleRequest {
     private String RuleIds;
     private String createdUser;
     private String lastModifiedUser;
-    private boolean isActive;
+    private Status isActive;
 }

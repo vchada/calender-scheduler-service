@@ -2,6 +2,7 @@ package com.calander.schedule.service;
 
 import com.calander.schedule.beans.HolidayDateRequest;
 import com.calander.schedule.beans.HolidayPersistRequest;
+import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.repo.RuleDefinitionRepo;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HolidaySelectorService {
@@ -26,41 +28,43 @@ public class HolidaySelectorService {
 		this.ruleDefinitionRepo = dateObservanceRepo;
 	}
 
-	public LocalDate getHolidayDate(final HolidayDateRequest holidayDateRequest) {
-		Optional<RuleDefinition> dateObservance = Optional
+	public List<LocalDate> getHolidayDate(final HolidayDateRequest holidayDateRequest) {
+		Optional<List<RuleDefinition>> dateObservance = Optional
 				.ofNullable(ruleDefinitionRepo.findByHolidayType(holidayDateRequest.getHolidayType()));
 		if (dateObservance.isPresent()) {
-			return dateOf(dateObservance.get(), holidayDateRequest.getYear());
+			return dateObservance.get().stream().map(request -> dateOf(request, holidayDateRequest.getYear())).collect(Collectors.toList());
 		}
 		return null;
 	}
 
-	public StatusResponse persistHoliday(final HolidayPersistRequest holidayPersistRequest) {
-		if(Objects.nonNull(holidayPersistRequest)) {
-			final RuleDefinition ruleDefinition = RuleDefinition.builder()
+	public StatusResponse persistHoliday(final List<HolidayPersistRequest> holidayPersistRequests) {
+		if (Objects.nonNull(holidayPersistRequests) && !holidayPersistRequests.isEmpty()) {
+			final List<RuleDefinition> ruleDefinitions = holidayPersistRequests.stream()
+					.map(holidayPersistRequest -> RuleDefinition.builder()
 					.createdUser(holidayPersistRequest.getCreatedUser())
 					.customDays(holidayPersistRequest.getCustomDays())
 					.holidayType(holidayPersistRequest.getHolidayType())
 					.dayOfTheMonth(holidayPersistRequest.getDayOfTheMonth())
 					.dayOfTheWeek(holidayPersistRequest.getDayOfTheWeek() <= 0 ? null : DayOfWeek.of(holidayPersistRequest.getDayOfTheWeek()))
-					.isActive("true".equals(holidayPersistRequest.getIsActive()) ? true : false)
+					.isActive(holidayPersistRequest.getIsActive())
 					.month(holidayPersistRequest.getMonth() <= 0 ? null : Month.of(holidayPersistRequest.getMonth()))
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
-					.build();
-			ruleDefinitionRepo.save(ruleDefinition);
+					.build()).collect(Collectors.toList());
+			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
 		}
 		return StatusResponse.builder().message("HOLIDAY_PERSIST_FAILED").build();
 	}
 
-	public List<RuleDefinition> fetchAllRules()
+	public Map<String, List<RuleDefinition>> fetchAllRules()
 	{
-		return (List<RuleDefinition>) ruleDefinitionRepo.findAll();
+		List<RuleDefinition> ruleDefinitionList = (List<RuleDefinition>) ruleDefinitionRepo.findAll();
+		return ruleDefinitionList.stream().collect(Collectors.groupingBy(RuleDefinition::getHolidayType));
 	}
 
 	public Map<String, String> fetchAllHolidays(final int year) {
 		Map<String, String> holidayDateMap = new HashMap<>();
-		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(true);
+		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(Status.ACTIVE);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
 			ruleDefinitionList.stream()
 					.filter(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())
@@ -102,16 +106,23 @@ public class HolidaySelectorService {
 		}
 	}
 
-	public RuleDefinition fetchAllRulesById(int id)
+	public List<RuleDefinition> fetchAllRulesById(String ruleName)
 	{
-		return ruleDefinitionRepo.findById(id).get();
+		return ruleDefinitionRepo.findByHolidayType(ruleName);
 	}
 
-	public StatusResponse updateRules(RuleDefinition ruleDefinition)
+	public StatusResponse updateRules(List<RuleDefinition> ruleDefinitions)
 	{
-		Optional<RuleDefinition> searchRuleEntity = ruleDefinitionRepo.findById(ruleDefinition.getId());
-		if(searchRuleEntity.isPresent()) {
-			ruleDefinitionRepo.save(ruleDefinition);
+		boolean isValidRequest = true;
+		for(RuleDefinition ruleDefinition: ruleDefinitions) {
+			isValidRequest = Optional.ofNullable(ruleDefinitionRepo.findById(ruleDefinition.getId()))
+					.map(ruleDefinitionFromDb -> Boolean.TRUE).orElse(Boolean.FALSE);
+			if(!isValidRequest) {
+				break;
+			}
+		}
+		if(isValidRequest) {
+			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_UPDATED_SUCCESSFULLY").build();
 //			RuleDefinition ruleDefinition1 = searchRuleEntity.get();
 //

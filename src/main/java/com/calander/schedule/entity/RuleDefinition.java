@@ -6,6 +6,7 @@ import java.time.Month;
 
 import javax.persistence.*;
 
+import com.calander.schedule.beans.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,6 +63,7 @@ public class RuleDefinition {
 	private String lastModifiedUser;
 
 	@Column(name = "IS_ACTIVE")
-	private boolean isActive;
+	@Enumerated(EnumType.STRING)
+	private Status isActive;
 
 }

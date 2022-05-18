@@ -12,5 +12,5 @@ public class HolidayPersistRequest {
     private String customDays;
     private String createdUser;
     private String lastModifiedUser;
-    private String isActive;
+    private Status isActive;
 }

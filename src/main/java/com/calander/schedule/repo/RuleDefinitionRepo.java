@@ -1,5 +1,6 @@
 package com.calander.schedule.repo;
 
+import com.calander.schedule.beans.Status;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface RuleDefinitionRepo extends CrudRepository<RuleDefinition, Integer>{
-	
-	RuleDefinition findByHolidayType(String holidayType);
 
-	List<RuleDefinition> findByIsActive(boolean isActive);
+	List<RuleDefinition> findByHolidayType(String holidayType);
+
+	List<RuleDefinition> findByIsActive(Status isActive);
 
 }

@@ -1,6 +1,7 @@
 package com.calander.schedule.service;
 
 import com.calander.schedule.beans.CalenderScheduleRequest;
+import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.CalendarSchedule;
 import com.calander.schedule.repo.CalenderScheduleRepo;
@@ -26,7 +27,7 @@ public class CalenderScheduleService {
                     .createdUser(calenderScheduleRequest.getCreatedUser())
                     .name(calenderScheduleRequest.getName())
                     .RuleIds(calenderScheduleRequest.getRuleIds())
-                    .isActive(true)
+                    .isActive(Status.ACTIVE)
                     .lastModifiedUser(calenderScheduleRequest.getLastModifiedUser())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);

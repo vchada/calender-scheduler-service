@@ -35,14 +35,14 @@ public class HolidaySelectorController {
 
     @PostMapping(value = "/find-holiday",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public LocalDate findHolidayDate(@RequestBody final HolidayDateRequest holidayDateRequest) {
+    public List<LocalDate> findHolidayDate(@RequestBody final HolidayDateRequest holidayDateRequest) {
         return holidaySelectorService.getHolidayDate(holidayDateRequest);
     }
 
     @PostMapping(value = "/save",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public StatusResponse persistHoliday(@RequestBody final HolidayPersistRequest holidayPersistRequest) {
+    public StatusResponse persistHoliday(@RequestBody final List<HolidayPersistRequest> holidayPersistRequest) {
         return holidaySelectorService.persistHoliday(holidayPersistRequest);
     }
 
@@ -64,20 +64,20 @@ public class HolidaySelectorController {
     }
 
     @GetMapping(value = "/get-all-rules", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RuleDefinition> getAllRules()
+    public Map<String, List<RuleDefinition>> getAllRules()
     {
         return holidaySelectorService.fetchAllRules();
     }
 
     @GetMapping(value = "/get-rule-details-by-ruleId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RuleDefinition getAllRulesByRuleId(@RequestParam (value = "ruleId",required = false) String ruleId)
+    public List<RuleDefinition> getAllRulesByRuleId(@RequestParam (value = "ruleId",required = false) String ruleName)
     {
-        return holidaySelectorService.fetchAllRulesById(Integer.valueOf(ruleId));
+        return holidaySelectorService.fetchAllRulesById(ruleName);
     }
     @PostMapping(value = "/update-rule",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public StatusResponse persistHoliday(@RequestBody final RuleDefinition ruleDefinition) {
+    public StatusResponse updateRuleDefinition(@RequestBody final List<RuleDefinition> ruleDefinition) {
         return holidaySelectorService.updateRules(ruleDefinition);
     }
 }

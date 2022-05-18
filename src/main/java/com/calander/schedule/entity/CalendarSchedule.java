@@ -1,5 +1,6 @@
 package com.calander.schedule.entity;
 
+import com.calander.schedule.beans.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,6 +45,7 @@ public class CalendarSchedule {
     private Date lastModifiedDateAndTime;
 
     @Column(name = "IS_ACTIVE")
-    private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private Status isActive;
 
 }

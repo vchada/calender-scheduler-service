@@ -1,16 +1,17 @@
 package com.calander.schedule.service;
 
+import com.calander.schedule.beans.DayOfTheWeekRequest;
+import com.calander.schedule.beans.PreviewRequest;
+import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Year;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.calander.schedule.beans.PreviewRequest;
-import com.calander.schedule.entity.RuleDefinition;
-import org.springframework.stereotype.Service;
-
-import com.calander.schedule.beans.DayOfTheWeekRequest;
+import java.util.stream.Collectors;
 
 @Service
 public class DayOfTheWeekService {
@@ -28,13 +29,15 @@ public class DayOfTheWeekService {
 		return datesList;
 	}
 
-	public LocalDate previewDate(final PreviewRequest previewRequest) {
-		if(previewRequest.getDayOfTheMonth() != 0) {
-			return LocalDate.of(previewRequest.getYear(), previewRequest.getMonth(), previewRequest.getDayOfTheMonth());
-		} else {
-			return LocalDate.now().withYear(previewRequest.getYear()).withMonth(previewRequest.getMonth().getValue())
-					.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), previewRequest.getDayOfTheWeek()));
-		}
+	public List<LocalDate> previewDate(final List<PreviewRequest> previewRequests) {
+		return previewRequests.stream().map(previewRequest -> {
+			if(previewRequest.getDayOfTheMonth() != 0) {
+				return LocalDate.of(previewRequest.getYear(), previewRequest.getMonth(), previewRequest.getDayOfTheMonth());
+			} else {
+				return LocalDate.now().withYear(previewRequest.getYear()).withMonth(Month.of(previewRequest.getMonth()).getValue())
+						.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+			}
+		}).collect(Collectors.toList());
 	}
 
 }

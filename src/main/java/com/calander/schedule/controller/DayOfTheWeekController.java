@@ -35,7 +35,7 @@ public class DayOfTheWeekController {
 	}
 
 	@PostMapping(value = "/preview", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public LocalDate getPreviewDate(@RequestBody PreviewRequest previewRequest) {
+	public List<LocalDate> getPreviewDate(@RequestBody List<PreviewRequest> previewRequest) {
 		return dayOfTheWeekService.previewDate(previewRequest);
 	}
 	
