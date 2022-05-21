@@ -32,7 +32,7 @@ public class DayOfTheWeekService {
 	public List<LocalDate> previewDate(final List<PreviewRequest> previewRequests) {
 		return previewRequests.stream().map(previewRequest -> {
 			if(previewRequest.getDayOfTheMonth() != 0) {
-				return LocalDate.of(previewRequest.getYear(), previewRequest.getMonth(), previewRequest.getDayOfTheMonth());
+				return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
 			} else {
 				return LocalDate.now().withYear(previewRequest.getYear()).withMonth(Month.of(previewRequest.getMonth()).getValue())
 						.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));

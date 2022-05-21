@@ -38,7 +38,7 @@ public class DayOfTheWeekController {
 	public List<LocalDate> getPreviewDate(@RequestBody List<PreviewRequest> previewRequest) {
 		return dayOfTheWeekService.previewDate(previewRequest);
 	}
-	
+
 	
 
 }

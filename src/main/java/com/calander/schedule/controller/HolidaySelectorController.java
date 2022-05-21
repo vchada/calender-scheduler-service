@@ -80,4 +80,8 @@ public class HolidaySelectorController {
     public StatusResponse updateRuleDefinition(@RequestBody final List<RuleDefinition> ruleDefinition) {
         return holidaySelectorService.updateRules(ruleDefinition);
     }
+
+    /// schedule all mondays not working
+    // change db tables with FK style
+    // update feature not working
 }

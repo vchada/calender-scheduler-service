@@ -25,7 +25,7 @@ public class RuleDefinition {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RULE_ID")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "HOLIDAY_TYPE")
 	private String holidayType;

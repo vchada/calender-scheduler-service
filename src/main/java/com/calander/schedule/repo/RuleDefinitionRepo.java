@@ -15,4 +15,6 @@ public interface RuleDefinitionRepo extends CrudRepository<RuleDefinition, Integ
 
 	List<RuleDefinition> findByIsActive(Status isActive);
 
+	void deleteByHolidayType(String holidayType);
+
 }
