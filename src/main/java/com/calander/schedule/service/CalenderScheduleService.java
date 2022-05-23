@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -36,7 +37,15 @@ public class CalenderScheduleService {
         }
         return StatusResponse.builder().message("CALENDER_PERSIST_FAILED").build();
     }
+    public StatusResponse updateCalendarSchedule(final CalendarSchedule calenderScheduleRequest) {
+        Optional<CalendarSchedule> searchRuleEntity = calenderScheduleRepo.findById(calenderScheduleRequest.getId());
 
+        if(searchRuleEntity.isPresent()) {
+            calenderScheduleRepo.save(calenderScheduleRequest);
+            return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();
+        }
+        return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();
+    }
     public List<CalendarSchedule> getAllCalendars(String year)
     {
         return StreamSupport.stream(calenderScheduleRepo.findAll().spliterator(), false)

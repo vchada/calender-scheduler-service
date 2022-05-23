@@ -50,7 +50,12 @@ public class HolidaySelectorController {
     public Map<String, String> getAllHoliday(@PathVariable final int year) {
         return holidaySelectorService.fetchAllHolidays(year);
     }
-
+    @PostMapping(value = "/updateCalendar",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public StatusResponse persistCalendar(@RequestBody final CalendarSchedule calenderScheduleRequest) {
+        return calenderScheduleService.updateCalendarSchedule(calenderScheduleRequest);
+    }
     @PostMapping(value = "/saveCalendar",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
