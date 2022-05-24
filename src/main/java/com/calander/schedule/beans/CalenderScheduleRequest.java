@@ -9,4 +9,8 @@ public class CalenderScheduleRequest {
     private String createdUser;
     private String lastModifiedUser;
     private Status isActive;
+    private String rulesIncluded;
+    private String rulesExcluded;
+    private String description;
+    private String year;
 }

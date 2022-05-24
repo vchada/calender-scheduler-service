@@ -50,6 +50,7 @@ public class HolidaySelectorService {
 					.isActive(holidayPersistRequest.getIsActive())
 					.month(holidayPersistRequest.getMonth() <= 0 ? null : Month.of(holidayPersistRequest.getMonth()))
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
+					.description(holidayPersistRequest.getDescription())
 					.build()).collect(Collectors.toList());
 			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
@@ -164,7 +165,7 @@ public class HolidaySelectorService {
 ////
 ////			ruleDefinitionRepo.save(ruleDefinition1)
 //		}
-		return StatusResponse.builder().message("HOLIDAY_UPDATE_FAILED").build();
+		return StatusResponse.builder().message("HOLIDAY_UPDATED_SUCCESSFULLY").build();
 	}
 
 	/*public RuleDefinition fetchRuleDefinition(RuleDefinition ruleDefinition,int year)

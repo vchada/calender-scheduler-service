@@ -48,4 +48,15 @@ public class CalendarSchedule {
     @Enumerated(EnumType.STRING)
     private Status isActive;
 
+    @Column(name = "RULES_INCLUDED")
+    private String rulesIncluded;
+
+    @Column(name = "RULES_EXCLUDED")
+    private String rulesExcluded;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    @Column(name = "YEAR")
+    private String year;
 }

@@ -4,8 +4,10 @@ import com.calander.schedule.beans.CalenderScheduleRequest;
 import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.CalendarSchedule;
+import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.repo.CalenderScheduleRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +32,10 @@ public class CalenderScheduleService {
                     .RuleIds(calenderScheduleRequest.getRuleIds())
                     .isActive(Status.ACTIVE)
                     .lastModifiedUser(calenderScheduleRequest.getLastModifiedUser())
+                    .rulesIncluded(calenderScheduleRequest.getRulesIncluded())
+                    .rulesExcluded(calenderScheduleRequest.getRulesExcluded())
+                    .description(calenderScheduleRequest.getDescription())
+                    .year(calenderScheduleRequest.getYear())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);
             return StatusResponse.builder().message("CALENDER_PERSISTED_SUCCESSFULLY").build();
@@ -37,14 +43,16 @@ public class CalenderScheduleService {
         }
         return StatusResponse.builder().message("CALENDER_PERSIST_FAILED").build();
     }
+    @Transactional(rollbackFor = Exception.class)
     public StatusResponse updateCalendarSchedule(final CalendarSchedule calenderScheduleRequest) {
-        Optional<CalendarSchedule> searchRuleEntity = calenderScheduleRepo.findById(calenderScheduleRequest.getId());
-
-        if(searchRuleEntity.isPresent()) {
+        calenderScheduleRepo.deleteByName(calenderScheduleRequest.getName());
+        calenderScheduleRepo.save(calenderScheduleRequest);
+        return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();
+       /* if(searchRuleEntity.isPresent()) {
             calenderScheduleRepo.save(calenderScheduleRequest);
             return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();
         }
-        return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();
+        return StatusResponse.builder().message("CALENDAR UPDATED SUCCESSFULLY").build();*/
     }
     public List<CalendarSchedule> getAllCalendars(String year)
     {

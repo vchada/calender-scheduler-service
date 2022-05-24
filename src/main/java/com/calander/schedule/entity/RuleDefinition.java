@@ -62,6 +62,9 @@ public class RuleDefinition {
 	@Column(name = "LAST_MODIFIED_USR")
 	private String lastModifiedUser;
 
+	@Column(name = "DESCRIPTION")
+	private String description;
+
 	@Column(name = "IS_ACTIVE")
 	@Enumerated(EnumType.STRING)
 	private Status isActive;
