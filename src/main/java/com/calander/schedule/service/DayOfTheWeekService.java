@@ -34,10 +34,13 @@ public class DayOfTheWeekService {
 			if(previewRequest.getDayOfTheMonth() != 0) {
 				return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
 			} else {
-				return LocalDate.now().withYear(previewRequest.getYear()).withMonth(Month.of(previewRequest.getMonth()).getValue())
-						.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+				LocalDate date = LocalDate.now()
+                        				  .withYear(previewRequest.getYear())
+                        				  .withMonth(Month.of(previewRequest.getMonth()).getValue())
+                        				  .with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+                		return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
 			}
-		}).collect(Collectors.toList());
+		}).filter(Objects::nonNull).sorted().collect(Collectors.toList());
 	}
 
 }
