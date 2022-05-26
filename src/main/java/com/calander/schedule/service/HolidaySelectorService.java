@@ -127,6 +127,9 @@ public class HolidaySelectorService {
 	@Transactional(rollbackFor = Exception.class)
 	public StatusResponse updateRules(List<RuleDefinition> ruleDefinitions)
 	{
+		/*DateFormat df = new SimpleDateFormat("yyyy/mm/dd HH:mm:ss");
+			java.sql.Date today = (java.sql.Date) new Date();*/
+
 		String holidayType = Optional.ofNullable(ruleDefinitions)
 				.map(list -> list.get(0))
 				.map(RuleDefinition::getHolidayType)
@@ -134,6 +137,7 @@ public class HolidaySelectorService {
 		ruleDefinitionRepo.deleteByHolidayType(holidayType);
 		ruleDefinitions.stream().map(ruleDefinition -> {
 			ruleDefinition.setId(null);
+			ruleDefinition.setLastModifiedUser("User");
 			return ruleDefinition;
 		}).forEach(ruleDefinitionRepo::save);
 
