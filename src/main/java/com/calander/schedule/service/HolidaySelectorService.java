@@ -6,6 +6,7 @@ import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.repo.RuleDefinitionRepo;
+import org.apache.tomcat.jni.Local;
 import org.apache.tomcat.util.digester.Rule;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,7 @@ public class HolidaySelectorService {
 					.month(holidayPersistRequest.getMonth() <= 0 ? null : Month.of(holidayPersistRequest.getMonth()))
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
 					.description(holidayPersistRequest.getDescription())
+					.lastModifiedUser(holidayPersistRequest.getLastModifiedUser())
 					.build()).collect(Collectors.toList());
 			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
@@ -68,16 +70,44 @@ public class HolidaySelectorService {
 		Map<String, String> holidayDateMap = new HashMap<>();
 		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(Status.ACTIVE);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
+
 			Map<String, List<RuleDefinition>> ruleDefinitionMap = ruleDefinitionList.stream().collect(Collectors.groupingBy(RuleDefinition::getHolidayType));
 
 			for(Map.Entry<String, List<RuleDefinition>> mapList: ruleDefinitionMap.entrySet()) {
-				holidayDateMap.put(mapList.getKey(), mapList.getValue().stream()
-						.map(rulesDefinition -> this.dateOf(rulesDefinition, year))
-						.filter(Objects::nonNull)
-						.map(LocalDate::toString)
-						.map(date -> date.substring(date.indexOf("-") + 1))
-						.collect(Collectors.joining(",")));
 
+				if (mapList.getValue().stream().anyMatch(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())) {
+					holidayDateMap.put(mapList.getKey(), mapList.getValue().stream()
+							.filter(Objects::nonNull)
+							.map(rulesDefinition -> {
+								LocalDate date = this.dateOf(rulesDefinition, year);
+								if(rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_BEFORE")) {
+									return date.minusDays(1);
+								} else if(rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_AFTER")) {
+									return date.plusDays(1);
+								}
+								return date;
+							})
+							.filter(Objects::nonNull)
+							// TODO: recheck this logic getting next year some times
+							.filter(localDate -> localDate.getYear() == year)
+							.map(LocalDate::toString)
+							.map(date -> date.substring(date.indexOf("-") + 1))
+							.collect(Collectors.joining(",")));
+					// [TODO:] if lastModifieedUser is DAY_BEFORE decrement date if DAY_AFTER then increment by 1 day
+				} else {
+					 mapList.getValue().stream()
+					.filter(ruleDefinition -> Objects.nonNull(ruleDefinition.getCustomDays()) && !ruleDefinition.getCustomDays().isEmpty())
+					.forEach(ruleDefinition -> {
+/*						List<String> updatedDates = new ArrayList<>();
+						for(String customDate : ruleDefinition.getCustomDays().split(",")) {
+							final String[] customDateValues = customDate.split("-");
+							LocalDate date = LocalDate.of(year,
+									Month.of(Integer.parseInt(customDateValues[0])), Integer.parseInt(customDateValues[1]));
+							updatedDates.add(date.toString());
+						}*/
+						holidayDateMap.put(mapList.getKey(), ruleDefinition.getCustomDays());
+					});
+				}
 			}
 //			ruleDefinitionList.stream()
 //					.filter(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())
@@ -137,7 +167,6 @@ public class HolidaySelectorService {
 		ruleDefinitionRepo.deleteByHolidayType(holidayType);
 		ruleDefinitions.stream().map(ruleDefinition -> {
 			ruleDefinition.setId(null);
-			ruleDefinition.setLastModifiedUser("User");
 			return ruleDefinition;
 		}).forEach(ruleDefinitionRepo::save);
 
