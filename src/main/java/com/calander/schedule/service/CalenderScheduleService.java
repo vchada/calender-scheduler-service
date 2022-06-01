@@ -30,12 +30,13 @@ public class CalenderScheduleService {
                     .createdUser(calenderScheduleRequest.getCreatedUser())
                     .name(calenderScheduleRequest.getName())
                     .RuleIds(calenderScheduleRequest.getRuleIds())
-                    .isActive(Status.ACTIVE)
+                    .isActive(calenderScheduleRequest.getIsActive())
                     .lastModifiedUser(calenderScheduleRequest.getLastModifiedUser())
                     .rulesIncluded(calenderScheduleRequest.getRulesIncluded())
                     .rulesExcluded(calenderScheduleRequest.getRulesExcluded())
                     .description(calenderScheduleRequest.getDescription())
                     .year(calenderScheduleRequest.getYear())
+                    .displayName(calenderScheduleRequest.getDisplayName())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);
             return StatusResponse.builder().message("CALENDER_PERSISTED_SUCCESSFULLY").build();

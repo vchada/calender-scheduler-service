@@ -59,4 +59,7 @@ public class CalendarSchedule {
 
     @Column(name = "YEAR")
     private String year;
+
+    @Column(name = "DISPLAY_NAME")
+    private String displayName;
 }

@@ -53,6 +53,8 @@ public class HolidaySelectorService {
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
 					.description(holidayPersistRequest.getDescription())
 					.lastModifiedUser(holidayPersistRequest.getLastModifiedUser())
+					.year(holidayPersistRequest.getYear())
+					.displayName(holidayPersistRequest.getDisplayName())
 					.build()).collect(Collectors.toList());
 			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
@@ -80,10 +82,12 @@ public class HolidaySelectorService {
 							.filter(Objects::nonNull)
 							.map(rulesDefinition -> {
 								LocalDate date = this.dateOf(rulesDefinition, year);
-								if(rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_BEFORE")) {
-									return date.minusDays(1);
-								} else if(rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_AFTER")) {
-									return date.plusDays(1);
+								if(null != rulesDefinition.getLastModifiedUser()) {
+									if (rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_BEFORE")) {
+										return date.minusDays(1);
+									} else if (rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_AFTER")) {
+										return date.plusDays(1);
+									}
 								}
 								return date;
 							})

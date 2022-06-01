@@ -13,4 +13,5 @@ public class CalenderScheduleRequest {
     private String rulesExcluded;
     private String description;
     private String year;
+    private String displayName;
 }

@@ -65,6 +65,12 @@ public class RuleDefinition {
 	@Column(name = "DESCRIPTION")
 	private String description;
 
+	@Column(name = "YEAR")
+	private String year;
+
+	@Column(name = "DISPLAY_NAME")
+	private String displayName;
+
 	@Column(name = "IS_ACTIVE")
 	@Enumerated(EnumType.STRING)
 	private Status isActive;
