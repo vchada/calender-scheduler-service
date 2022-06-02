@@ -9,9 +9,7 @@ import com.calander.schedule.repo.CalenderScheduleRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -59,5 +57,15 @@ public class CalenderScheduleService {
     {
         return StreamSupport.stream(calenderScheduleRepo.findAll().spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    public Set<String> getAllCalendarNames() {
+        Set<String> retVal = new HashSet<>();
+        for(CalendarSchedule calendarSchedule: calenderScheduleRepo.findAll())
+        {
+            retVal.add(calendarSchedule.getDisplayName());
+            retVal.add(calendarSchedule.getName());
+        }
+        return retVal;
     }
 }

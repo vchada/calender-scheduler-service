@@ -3,6 +3,7 @@ package com.calander.schedule.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.calander.schedule.beans.CalenderScheduleRequest;
 import com.calander.schedule.beans.HolidayPersistRequest;
@@ -78,6 +79,16 @@ public class HolidaySelectorController {
     public List<RuleDefinition> getAllRulesByRuleId(@RequestParam (value = "ruleId",required = false) String ruleName)
     {
         return holidaySelectorService.fetchAllRulesById(ruleName);
+    }
+    @GetMapping(value = "/get-all-existing-rule-names", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<String> getAllRuleNames()
+    {
+        return holidaySelectorService.getAllRuleNames();
+    }
+    @GetMapping(value = "/get-all-existing-calendar-names", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<String> getAllCalendarNames()
+    {
+        return calenderScheduleService.getAllCalendarNames();
     }
     @PostMapping(value = "/update-rule",
             consumes = MediaType.APPLICATION_JSON_VALUE,

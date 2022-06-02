@@ -4,7 +4,9 @@ import com.calander.schedule.beans.HolidayDateRequest;
 import com.calander.schedule.beans.HolidayPersistRequest;
 import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
+import com.calander.schedule.entity.CalendarSchedule;
 import com.calander.schedule.entity.RuleDefinition;
+import com.calander.schedule.repo.CalenderScheduleRepo;
 import com.calander.schedule.repo.RuleDefinitionRepo;
 import org.apache.tomcat.jni.Local;
 import org.apache.tomcat.util.digester.Rule;
@@ -204,6 +206,18 @@ public class HolidaySelectorService {
 //		}
 		return StatusResponse.builder().message("HOLIDAY_UPDATED_SUCCESSFULLY").build();
 	}
+
+	public Set<String> getAllRuleNames()
+	{
+		Set<String> retVal = new HashSet<>();
+		for(RuleDefinition ruleDefinition :ruleDefinitionRepo.findAll())
+		{
+			retVal.add(ruleDefinition.getDisplayName());
+			retVal.add(ruleDefinition.getHolidayType());
+		}
+		return retVal;
+	}
+
 
 	/*public RuleDefinition fetchRuleDefinition(RuleDefinition ruleDefinition,int year)
 	{
