@@ -71,6 +71,9 @@ public class RuleDefinition {
 	@Column(name = "DISPLAY_NAME")
 	private String displayName;
 
+	@Column(name = "RULES_INCLUDED")
+	private String rulesIncluded;
+
 	@Column(name = "IS_ACTIVE")
 	@Enumerated(EnumType.STRING)
 	private Status isActive;

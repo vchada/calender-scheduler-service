@@ -57,6 +57,7 @@ public class HolidaySelectorService {
 					.lastModifiedUser(holidayPersistRequest.getLastModifiedUser())
 					.year(holidayPersistRequest.getYear())
 					.displayName(holidayPersistRequest.getDisplayName())
+					.rulesIncluded(holidayPersistRequest.getRulesIncluded())
 					.build()).collect(Collectors.toList());
 			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();

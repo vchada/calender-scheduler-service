@@ -16,4 +16,5 @@ public class HolidayPersistRequest {
     private String description;
     private String year;
     private String displayName;
+    private String rulesIncluded;
 }
