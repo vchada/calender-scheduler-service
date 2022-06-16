@@ -80,7 +80,8 @@ public class HolidaySelectorService {
 
 			for(Map.Entry<String, List<RuleDefinition>> mapList: ruleDefinitionMap.entrySet()) {
 
-				if (mapList.getValue().stream().anyMatch(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty())) {
+				if (mapList.getValue().stream().anyMatch(ruleDefinition -> Objects.isNull(ruleDefinition.getCustomDays()) || ruleDefinition.getCustomDays().isEmpty()))
+				{
 					holidayDateMap.put(mapList.getKey(), mapList.getValue().stream()
 							.filter(Objects::nonNull)
 							.map(rulesDefinition -> {
@@ -102,6 +103,7 @@ public class HolidaySelectorService {
 							.collect(Collectors.joining(",")));
 					// [TODO:] if lastModifieedUser is DAY_BEFORE decrement date if DAY_AFTER then increment by 1 day
 				} else {
+					//TODO: adjustForWeekendsIfNecessary
 					 mapList.getValue().stream()
 					.filter(ruleDefinition -> Objects.nonNull(ruleDefinition.getCustomDays()) && !ruleDefinition.getCustomDays().isEmpty())
 					.forEach(ruleDefinition -> {
@@ -137,12 +139,19 @@ public class HolidaySelectorService {
 	}
 	
 	private LocalDate dateOf(final RuleDefinition ruleDefinition, final int year) {
+		LocalDate retVal ;
 		if(ruleDefinition.getDayOfTheMonth() != 0) {
-			return adjustForWeekendsIfNecessary(LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth()));
+			retVal =  adjustForWeekendsIfNecessary(LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth()));
 		} else {
-			return adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+			retVal = adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
 			.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth(), ruleDefinition.getDayOfTheWeek())));
 		}
+		if(retVal.getMonth()!=ruleDefinition.getMonth())
+		{
+			retVal = adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+					.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth()-1, ruleDefinition.getDayOfTheWeek())));
+		}
+		return retVal;
 	}
 
 	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {

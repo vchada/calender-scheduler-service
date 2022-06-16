@@ -23,6 +23,7 @@ public class DayOfTheWeekService {
 		final LocalDate startDate = LocalDate.of(dayOfTheWeekRequest.getYear(), 01, 01);
 		final LocalDate endDate = LocalDate.of(Year.now().getValue(), 12, 31);
 		LocalDate dayOfWeekDate = startDate.with(TemporalAdjusters.nextOrSame(dayOfTheWeekRequest.getDayOfWeek()));
+
 		while(!dayOfWeekDate.isAfter(endDate)) {
 			datesList.add( dayOfWeekDate );
 		    dayOfWeekDate = dayOfWeekDate.plusWeeks(1);
@@ -39,9 +40,20 @@ public class DayOfTheWeekService {
                         				  .withYear(previewRequest.getYear())
                         				  .withMonth(Month.of(previewRequest.getMonth()).getValue())
                         				  .with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+				date = adjustForWeekendsIfNecessary(date);
                 		return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
 			}
 		}).filter(Objects::nonNull).sorted().collect(Collectors.toList());
 	}
 
+	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
+		final DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+		if(dayOfWeek != null && DayOfWeek.SATURDAY.equals(dayOfWeek)) {
+			return localDate.minusDays(1);
+		} else if(DayOfWeek.SUNDAY.equals(dayOfWeek)) {
+			return localDate.plusDays(1);
+		} else {
+			return localDate;
+		}
+	}
 }
