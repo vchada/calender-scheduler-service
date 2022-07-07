@@ -47,9 +47,9 @@ public class HolidaySelectorController {
         return holidaySelectorService.persistHoliday(holidayPersistRequest);
     }
 
-    @GetMapping(value = "/get-all-holidays/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> getAllHoliday(@PathVariable final int year) {
-        return holidaySelectorService.fetchAllHolidays(year);
+    @GetMapping(value = "/get-all-holidays/{year}/{includeWeekends}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, String> getAllHoliday(@PathVariable final int year,@PathVariable boolean includeWeekends) {
+        return holidaySelectorService.fetchAllHolidays(year,includeWeekends);
     }
     @PostMapping(value = "/updateCalendar",
             consumes = MediaType.APPLICATION_JSON_VALUE,

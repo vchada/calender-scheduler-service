@@ -40,7 +40,7 @@ public class DayOfTheWeekService {
                         				  .withYear(previewRequest.getYear())
                         				  .withMonth(Month.of(previewRequest.getMonth()).getValue())
                         				  .with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
-				date = adjustForWeekendsIfNecessary(date);
+				//date = adjustForWeekendsIfNecessary(date);
                 		return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
 			}
 		}).filter(Objects::nonNull).sorted().collect(Collectors.toList());

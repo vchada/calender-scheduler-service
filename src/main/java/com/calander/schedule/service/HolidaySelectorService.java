@@ -71,7 +71,7 @@ public class HolidaySelectorService {
 		return ruleDefinitionList.stream().collect(Collectors.groupingBy(RuleDefinition::getHolidayType));
 	}
 
-	public Map<String, String> fetchAllHolidays(final int year) {
+	public Map<String, String> fetchAllHolidays(final int year, boolean includeWeekends) {
 		Map<String, String> holidayDateMap = new HashMap<>();
 		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(Status.ACTIVE);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
@@ -85,7 +85,11 @@ public class HolidaySelectorService {
 					holidayDateMap.put(mapList.getKey(), mapList.getValue().stream()
 							.filter(Objects::nonNull)
 							.map(rulesDefinition -> {
-								LocalDate date = this.dateOf(rulesDefinition, year);
+								LocalDate date = null;
+								if(!includeWeekends)
+									 date = this.dateOf(rulesDefinition, year);
+								else
+									date = this.dateOfinclude(rulesDefinition, year);
 								if(null != rulesDefinition.getLastModifiedUser()) {
 									if (rulesDefinition.getLastModifiedUser().equalsIgnoreCase("DAY_BEFORE")) {
 										return date.minusDays(1);
@@ -150,6 +154,22 @@ public class HolidaySelectorService {
 		{
 			retVal = adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
 					.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth()-1, ruleDefinition.getDayOfTheWeek())));
+		}
+		return retVal;
+	}
+
+	private LocalDate dateOfinclude(final RuleDefinition ruleDefinition, final int year) {
+		LocalDate retVal ;
+		if(ruleDefinition.getDayOfTheMonth() != 0) {
+			retVal =  LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth());
+		} else {
+			retVal = LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+					.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth(), ruleDefinition.getDayOfTheWeek()));
+		}
+		if(retVal.getMonth()!=ruleDefinition.getMonth())
+		{
+			retVal = LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+					.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth()-1, ruleDefinition.getDayOfTheWeek()));
 		}
 		return retVal;
 	}
