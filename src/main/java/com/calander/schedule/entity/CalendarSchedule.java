@@ -62,4 +62,7 @@ public class CalendarSchedule {
 
     @Column(name = "DISPLAY_NAME")
     private String displayName;
+
+    @Column(name = "DATA_SOURCE")
+    private String dataSource;
 }

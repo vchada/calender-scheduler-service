@@ -35,6 +35,7 @@ public class CalenderScheduleService {
                     .description(calenderScheduleRequest.getDescription())
                     .year(calenderScheduleRequest.getYear())
                     .displayName(calenderScheduleRequest.getDisplayName())
+                    .dataSource(calenderScheduleRequest.getDataSource())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);
             return StatusResponse.builder().message("CALENDER_PERSISTED_SUCCESSFULLY").build();

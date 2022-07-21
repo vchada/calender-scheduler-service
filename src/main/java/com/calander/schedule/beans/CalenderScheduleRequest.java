@@ -14,4 +14,5 @@ public class CalenderScheduleRequest {
     private String description;
     private String year;
     private String displayName;
+    private String dataSource;
 }
