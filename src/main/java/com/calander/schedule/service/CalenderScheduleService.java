@@ -36,6 +36,7 @@ public class CalenderScheduleService {
                     .year(calenderScheduleRequest.getYear())
                     .displayName(calenderScheduleRequest.getDisplayName())
                     .dataSource(calenderScheduleRequest.getDataSource())
+                    .includeWeekends(calenderScheduleRequest.getIncludeWeekends())
                     .build();
             calenderScheduleRepo.save(calendarSchedule);
             return StatusResponse.builder().message("CALENDER_PERSISTED_SUCCESSFULLY").build();

@@ -15,4 +15,5 @@ public class CalenderScheduleRequest {
     private String year;
     private String displayName;
     private String dataSource;
+    private String includeWeekends;
 }

@@ -76,7 +76,7 @@ public class HolidaySelectorService {
 		final List<RuleDefinition> ruleDefinitionList = ruleDefinitionRepo.findByIsActive(Status.ACTIVE);
 		if(null != ruleDefinitionList && !ruleDefinitionList.isEmpty()) {
 
-			Map<String, List<RuleDefinition>> ruleDefinitionMap = ruleDefinitionList.stream().collect(Collectors.groupingBy(RuleDefinition::getHolidayType));
+			Map<String, List<RuleDefinition>> ruleDefinitionMap = ruleDefinitionList.stream().collect(Collectors.groupingBy(RuleDefinition::getDisplayName));
 
 			for(Map.Entry<String, List<RuleDefinition>> mapList: ruleDefinitionMap.entrySet()) {
 

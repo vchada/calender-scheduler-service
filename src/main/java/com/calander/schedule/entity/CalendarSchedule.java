@@ -65,4 +65,7 @@ public class CalendarSchedule {
 
     @Column(name = "DATA_SOURCE")
     private String dataSource;
+
+    @Column(name = "INCLUDE_WEEKENDS")
+    private String includeWeekends;
 }
