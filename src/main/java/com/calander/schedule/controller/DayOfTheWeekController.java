@@ -3,6 +3,7 @@ package com.calander.schedule.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.calander.schedule.beans.NumberOfWeeksRequest;
 import com.calander.schedule.beans.PreviewRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,11 @@ public class DayOfTheWeekController {
 	@PostMapping(value = "/preview", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<LocalDate> getPreviewDate(@RequestBody List<PreviewRequest> previewRequest) {
 		return dayOfTheWeekService.previewDate(previewRequest);
+	}
+
+	@PostMapping(value = "/get-max-week", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Integer getMaximumWeeksInMonth(@RequestBody NumberOfWeeksRequest numberOfWeeksRequest) {
+		return dayOfTheWeekService.getMaximumNumberWeek(numberOfWeeksRequest);
 	}
 
 	

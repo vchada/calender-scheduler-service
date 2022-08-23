@@ -1,17 +1,14 @@
 package com.calander.schedule.service;
 
 import com.calander.schedule.beans.DayOfTheWeekRequest;
+import com.calander.schedule.beans.NumberOfWeeksRequest;
 import com.calander.schedule.beans.PreviewRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.temporal.WeekFields;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,17 +30,30 @@ public class DayOfTheWeekService {
 
 	public List<LocalDate> previewDate(final List<PreviewRequest> previewRequests) {
 		return previewRequests.stream().map(previewRequest -> {
-			if(previewRequest.getDayOfTheMonth() != 0) {
-				return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
+			if(previewRequest.getWeekOfTheMonth() == -1) {
+				LocalDate localDate = LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), 1);
+				return localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek())));
 			} else {
-				LocalDate date = LocalDate.now()
-                        				  .withYear(previewRequest.getYear())
-                        				  .withMonth(Month.of(previewRequest.getMonth()).getValue())
-                        				  .with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
-				//date = adjustForWeekendsIfNecessary(date);
-                		return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
+				if (previewRequest.getDayOfTheMonth() != 0) {
+					return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
+				} else {
+					LocalDate date = LocalDate.now()
+							.withYear(previewRequest.getYear())
+							.withMonth(Month.of(previewRequest.getMonth()).getValue())
+							.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+					//date = adjustForWeekendsIfNecessary(date);
+					return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
+				}
 			}
 		}).filter(Objects::nonNull).sorted().collect(Collectors.toList());
+	}
+
+
+	public Integer getMaximumNumberWeek(final NumberOfWeeksRequest numberOfWeeksRequest) {
+		return numberOfWeeksRequest.getMonths().stream().map(month -> {
+			YearMonth yearMonth = YearMonth.of(numberOfWeeksRequest.getYear(), 1);
+			return yearMonth.atEndOfMonth().get(WeekFields.ISO.weekOfMonth());
+		}).sorted(Comparator.reverseOrder()).findFirst().get();
 	}
 
 	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
