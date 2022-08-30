@@ -1,6 +1,7 @@
 package com.calander.schedule.service;
 
 import com.calander.schedule.beans.CalenderScheduleRequest;
+import com.calander.schedule.beans.RulesRequest;
 import com.calander.schedule.beans.Status;
 import com.calander.schedule.beans.StatusResponse;
 import com.calander.schedule.entity.CalendarSchedule;
@@ -69,5 +70,18 @@ public class CalenderScheduleService {
             retVal.add(calendarSchedule.getName());
         }
         return retVal;
+    }
+
+    public boolean getRuleUsage(String rulesRequest)
+    {
+        for(CalendarSchedule calendarSchedule : getAllCalendars(String.valueOf(Calendar.getInstance().getWeekYear())))
+        {
+                if(calendarSchedule.getRulesIncluded().contains(rulesRequest)
+                || calendarSchedule.getRulesExcluded().contains(rulesRequest))
+                {
+                    return true;
+                }
+        }
+        return false;
     }
 }

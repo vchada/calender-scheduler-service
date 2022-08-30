@@ -74,6 +74,9 @@ public class RuleDefinition {
 	@Column(name = "RULES_INCLUDED")
 	private String rulesIncluded;
 
+	@Column(name = "INCLUDE_WEEKENDS")
+	private String includeWeekends;
+
 	@Column(name = "IS_ACTIVE")
 	@Enumerated(EnumType.STRING)
 	private Status isActive;

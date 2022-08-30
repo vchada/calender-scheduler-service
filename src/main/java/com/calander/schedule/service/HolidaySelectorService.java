@@ -1,9 +1,6 @@
 package com.calander.schedule.service;
 
-import com.calander.schedule.beans.HolidayDateRequest;
-import com.calander.schedule.beans.HolidayPersistRequest;
-import com.calander.schedule.beans.Status;
-import com.calander.schedule.beans.StatusResponse;
+import com.calander.schedule.beans.*;
 import com.calander.schedule.entity.CalendarSchedule;
 import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.repo.CalenderScheduleRepo;
@@ -58,6 +55,7 @@ public class HolidaySelectorService {
 					.year(holidayPersistRequest.getYear())
 					.displayName(holidayPersistRequest.getDisplayName())
 					.rulesIncluded(holidayPersistRequest.getRulesIncluded())
+					.includeWeekends(holidayPersistRequest.getIncludeWeekends())
 					.build()).collect(Collectors.toList());
 			ruleDefinitionRepo.saveAll(ruleDefinitions);
 			return StatusResponse.builder().message("HOLIDAY_PERSISTED_SUCCESSFULLY").build();
@@ -247,6 +245,8 @@ public class HolidaySelectorService {
 		}
 		return retVal;
 	}
+
+
 
 
 	/*public RuleDefinition fetchRuleDefinition(RuleDefinition ruleDefinition,int year)

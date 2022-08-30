@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.calander.schedule.beans.CalenderScheduleRequest;
-import com.calander.schedule.beans.HolidayPersistRequest;
-import com.calander.schedule.beans.StatusResponse;
+import com.calander.schedule.beans.*;
 import com.calander.schedule.entity.CalendarSchedule;
 import com.calander.schedule.entity.RuleDefinition;
 import com.calander.schedule.service.CalenderScheduleService;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import com.calander.schedule.beans.HolidayDateRequest;
 import com.calander.schedule.service.HolidaySelectorService;
 
 @RestController
@@ -96,7 +93,10 @@ public class HolidaySelectorController {
     public StatusResponse updateRuleDefinition(@RequestBody final List<RuleDefinition> ruleDefinition) {
         return holidaySelectorService.updateRules(ruleDefinition);
     }
-
+    @GetMapping(value = "/get-rule-usage", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean getRuleUsage(@RequestParam (value = "ruleId",required = false) String ruleName) {
+        return calenderScheduleService.getRuleUsage(ruleName);
+    }
     /// schedule all mondays not working
     // change db tables with FK style
     // update feature not working

@@ -32,16 +32,24 @@ public class DayOfTheWeekService {
 		return previewRequests.stream().map(previewRequest -> {
 			if(previewRequest.getWeekOfTheMonth() == -1) {
 				LocalDate localDate = LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), 1);
-				return localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek())));
+				if(previewRequest.getIncludeWeekends()=="true")
+					return adjustForWeekendsIfNecessary(localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek()))));
+				else
+					return localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek())));
 			} else {
 				if (previewRequest.getDayOfTheMonth() != 0) {
-					return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
+					if(previewRequest.getIncludeWeekends()=="true")
+						return adjustForWeekendsIfNecessary(LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth()));
+					else
+						return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
 				} else {
 					LocalDate date = LocalDate.now()
 							.withYear(previewRequest.getYear())
 							.withMonth(Month.of(previewRequest.getMonth()).getValue())
 							.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
-					//date = adjustForWeekendsIfNecessary(date);
+					if(previewRequest.getIncludeWeekends()=="true")
+						date = adjustForWeekendsIfNecessary(date);
+
 					return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
 				}
 			}

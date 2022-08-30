@@ -9,4 +9,5 @@ public class PreviewRequest {
     private int dayOfTheMonth;
     private int dayOfTheWeek;
     private int weekOfTheMonth;
+    private String includeWeekends;
 }
