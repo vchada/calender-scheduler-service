@@ -32,23 +32,18 @@ public class DayOfTheWeekService {
 		return previewRequests.stream().map(previewRequest -> {
 			if(previewRequest.getWeekOfTheMonth() == -1) {
 				LocalDate localDate = LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), 1);
-				if(previewRequest.getIncludeWeekends()=="true")
-					return adjustForWeekendsIfNecessary(localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek()))));
-				else
+
 					return localDate.with(TemporalAdjusters.lastInMonth(DayOfWeek.of(previewRequest.getDayOfTheWeek())));
 			} else {
 				if (previewRequest.getDayOfTheMonth() != 0) {
-					if(previewRequest.getIncludeWeekends()=="true")
-						return adjustForWeekendsIfNecessary(LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth()));
-					else
+
 						return LocalDate.of(previewRequest.getYear(), Month.of(previewRequest.getMonth()), previewRequest.getDayOfTheMonth());
 				} else {
 					LocalDate date = LocalDate.now()
 							.withYear(previewRequest.getYear())
 							.withMonth(Month.of(previewRequest.getMonth()).getValue())
 							.with(TemporalAdjusters.dayOfWeekInMonth(previewRequest.getWeekOfTheMonth(), DayOfWeek.of(previewRequest.getDayOfTheWeek())));
-					if(previewRequest.getIncludeWeekends()=="true")
-						date = adjustForWeekendsIfNecessary(date);
+
 
 					return date.getMonth().getValue() == previewRequest.getMonth() ? date : null;
 				}
@@ -64,7 +59,7 @@ public class DayOfTheWeekService {
 		}).sorted(Comparator.reverseOrder()).findFirst().get();
 	}
 
-	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
+	/*private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
 		final DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 		if(dayOfWeek != null && DayOfWeek.SATURDAY.equals(dayOfWeek)) {
 			return localDate.minusDays(1);
@@ -73,5 +68,5 @@ public class DayOfTheWeekService {
 		} else {
 			return localDate;
 		}
-	}
+	}*/
 }

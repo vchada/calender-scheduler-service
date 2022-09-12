@@ -143,14 +143,14 @@ public class HolidaySelectorService {
 	private LocalDate dateOf(final RuleDefinition ruleDefinition, final int year) {
 		LocalDate retVal ;
 		if(ruleDefinition.getDayOfTheMonth() != 0) {
-			retVal =  adjustForWeekendsIfNecessary(LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth()));
+			retVal =  LocalDate.of(year, ruleDefinition.getMonth(), ruleDefinition.getDayOfTheMonth());
 		} else {
-			retVal = adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
-			.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth(), ruleDefinition.getDayOfTheWeek())));
+			retVal = LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+			.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth(), ruleDefinition.getDayOfTheWeek()));
 		}
 		if(retVal.getMonth()!=ruleDefinition.getMonth())
 		{
-			retVal = adjustForWeekendsIfNecessary(LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
+			retVal = (LocalDate.now().withYear(year).withMonth(ruleDefinition.getMonth().getValue())
 					.with(TemporalAdjusters.dayOfWeekInMonth(ruleDefinition.getWeekOfTheMonth()-1, ruleDefinition.getDayOfTheWeek())));
 		}
 		return retVal;
@@ -172,7 +172,7 @@ public class HolidaySelectorService {
 		return retVal;
 	}
 
-	private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
+	/*private LocalDate adjustForWeekendsIfNecessary(final LocalDate localDate) {
 		final DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 		if(dayOfWeek != null && DayOfWeek.SATURDAY.equals(dayOfWeek)) {
 			return localDate.minusDays(1);
@@ -181,7 +181,7 @@ public class HolidaySelectorService {
 		} else {
 			return localDate;
 		}
-	}
+	}*/
 
 	public List<RuleDefinition> fetchAllRulesById(String ruleName)
 	{
