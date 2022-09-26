@@ -52,6 +52,7 @@ public class HolidaySelectorService {
 					.weekOfTheMonth(holidayPersistRequest.getWeekOfTheMonth())
 					.description(holidayPersistRequest.getDescription())
 					.lastModifiedUser(holidayPersistRequest.getLastModifiedUser())
+							.createdUser(holidayPersistRequest.getCreatedUser())
 					.year(holidayPersistRequest.getYear())
 					.displayName(holidayPersistRequest.getDisplayName())
 					.rulesIncluded(holidayPersistRequest.getRulesIncluded())

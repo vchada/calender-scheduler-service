@@ -49,6 +49,8 @@ public class UserProfileEntity {
     @Column(name = "LAST_MODIFIED_USER")
     private String lastModifiedUser;
 
+    @Column(name = "PASSWORD")
+    private String password;
 
 
 }
